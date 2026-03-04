@@ -32,10 +32,11 @@ export class AuthService {
                 email: dto.email,
                 password: hashedPassword,
                 name: dto.name,
+                role: dto.role,
             },
         });
 
-        return this.generateToken(user.id, user.email);
+        return this.generateToken(user.id, user.email, user.role);
     }
 
     async signin(dto: SigninDto) {
@@ -53,7 +54,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        return this.generateToken(user.id, user.email);
+        return this.generateToken(user.id, user.email, user.role);
     }
 
     async validateGoogleUser(googleUser: {
@@ -86,7 +87,7 @@ export class AuthService {
             }
         }
 
-        return this.generateToken(user.id, user.email);
+        return this.generateToken(user.id, user.email, user.role);
     }
 
     async getProfile(userId: number) {
@@ -102,8 +103,8 @@ export class AuthService {
         return result;
     }
 
-    private generateToken(userId: number, email: string) {
-        const payload = { sub: userId, email };
+    private generateToken(userId: number, email: string, role: string) {
+        const payload = { sub: userId, email, role };
         return {
             access_token: this.jwtService.sign(payload),
         };
