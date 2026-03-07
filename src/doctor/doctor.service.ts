@@ -1,6 +1,5 @@
 import {
     Injectable,
-    ConflictException,
     NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -12,17 +11,18 @@ export class DoctorService {
     constructor(private readonly prisma: PrismaService) { }
 
     async createProfile(userId: number, dto: CreateProfileDto) {
-        const existing = await this.prisma.doctorProfile.findUnique({
+        // Doctor record is auto-created on signup, so we update it with profile details
+        const doctor = await this.prisma.doctor.findUnique({
             where: { userId },
         });
 
-        if (existing) {
-            throw new ConflictException('Doctor profile already exists');
+        if (!doctor) {
+            throw new NotFoundException('Doctor record not found. Please sign up as a doctor first.');
         }
 
-        return this.prisma.doctorProfile.create({
+        return this.prisma.doctor.update({
+            where: { userId },
             data: {
-                userId,
                 specialization: dto.specialization,
                 qualification: dto.qualification,
                 experience: dto.experience,
@@ -32,7 +32,7 @@ export class DoctorService {
     }
 
     async getProfile(userId: number) {
-        const profile = await this.prisma.doctorProfile.findUnique({
+        const profile = await this.prisma.doctor.findUnique({
             where: { userId },
         });
 
@@ -44,7 +44,7 @@ export class DoctorService {
     }
 
     async updateProfile(userId: number, dto: UpdateProfileDto) {
-        const profile = await this.prisma.doctorProfile.findUnique({
+        const profile = await this.prisma.doctor.findUnique({
             where: { userId },
         });
 
@@ -52,7 +52,7 @@ export class DoctorService {
             throw new NotFoundException('Doctor profile not found');
         }
 
-        return this.prisma.doctorProfile.update({
+        return this.prisma.doctor.update({
             where: { userId },
             data: dto,
         });

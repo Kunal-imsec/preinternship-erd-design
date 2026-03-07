@@ -36,6 +36,25 @@ export class AuthService {
             },
         });
 
+        // Auto-create Doctor or Patient profile based on role
+        if (user.role === 'DOCTOR') {
+            await this.prisma.doctor.create({
+                data: {
+                    userId: user.id,
+                    name: user.name,
+                },
+            });
+        } else if (user.role === 'PATIENT') {
+            await this.prisma.patient.create({
+                data: {
+                    userId: user.id,
+                    name: user.name,
+                    age: 0,
+                    sex: 'Not specified',
+                },
+            });
+        }
+
         return this.generateToken(user.id, user.email, user.role);
     }
 

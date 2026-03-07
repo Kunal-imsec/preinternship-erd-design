@@ -21,30 +21,197 @@ model User {
   role           Role             @default(PATIENT)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  doctorProfile  DoctorProfile?
-  availabilities Availability[]
+  doctor         Doctor?
+  patient        Patient?
+  appointments   Appointment[]
+  notifications  Notification[]
+  familyMembers  FamilyMember[]
+  supportTickets SupportTicket[]
 }
 
-model DoctorProfile {
-  id             String   @id @default(uuid())
-  userId         Int      @unique
-  user           User     @relation(fields: [userId], references: [id])
-  specialization String
-  qualification  String
-  experience     Int
-  phone          String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+model Doctor {
+  doctor_id      Int                @id @default(autoincrement())
+  userId         Int                @unique
+  user           User               @relation(fields: [userId], references: [id])
+  name           String
+  specialization String             @default("")
+  qualification  String             @default("")
+  experience     Int                @default(0)
+  phone          String             @default("")
+  achievements   String?
+  rating         Float?
+  profileImage   String?
+  availability   WaveAvailability[]
+  appointments   Appointment[]
+  services       DoctorService[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 }
 
-model Availability {
-  id        String   @id @default(uuid())
+model Patient {
+  patient_id   Int           @id @default(autoincrement())
+  userId       Int           @unique
+  user         User          @relation(fields: [userId], references: [id])
+  name         String
+  age          Int
+  sex          String
+  weight       Float?
+  appointments Appointment[]
+  chatLogs     ChatLog[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model WaveAvailability {
+  id        Int        @id @default(autoincrement())
   doctorId  Int
-  doctor    User     @relation(fields: [doctorId], references: [id])
-  date      DateTime
+  doctor    Doctor     @relation(fields: [doctorId], references: [doctor_id])
+  dayOfWeek String
   startTime String
   endTime   String
-  isBooked  Boolean  @default(false)
+  timeSlots TimeSlot[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model TimeSlot {
+  id             Int              @id @default(autoincrement())
+  availabilityId Int
+  availability   WaveAvailability @relation(fields: [availabilityId], references: [id])
+  slotTime       String
+  endTime        String
+  isBooked       Boolean          @default(false)
+  maxPatients    Int              @default(10)
+  currentCount   Int              @default(0)
+  appointments   Appointment[]
+  createdAt      DateTime         @default(now())
+}
+
+model Appointment {
+  id               Int           @id @default(autoincrement())
+  userId           Int
+  user             User          @relation(fields: [userId], references: [id])
+  doctorId         Int
+  doctor           Doctor        @relation(fields: [doctorId], references: [doctor_id])
+  patientId        Int
+  patient          Patient       @relation(fields: [patientId], references: [patient_id])
+  slotId           Int
+  slot             TimeSlot      @relation(fields: [slotId], references: [id])
+  appointmentDate  DateTime
+  consultationType String
+  visitType        String
+  status           String        @default("pending")
+  payment          Payment?
+  reminder         Reminder?
+  cancellation     Cancellation?
+  reschedules      Reschedule[]
+  feedback         Feedback?
+  complaints       Complaint[]
+  coPatientCollabs CoPatientCollab[]
+  createdAt        DateTime      @default(now())
+}
+
+model Payment {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  amount        Float
+  status        String      @default("pending")
+  paymentMethod String
+  createdAt     DateTime    @default(now())
+}
+
+model Reminder {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  reminderTime  DateTime
+  type          String
+  ivrAppId      String?
+}
+
+model Cancellation {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  cancelledBy   String
+  reason        String
+  createdAt     DateTime    @default(now())
+}
+
+model Reschedule {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  oldSlotId     Int
+  newSlotId     Int
+  rescheduledBy String
+  reason        String
+}
+
+model Feedback {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  rating        Int
+  review        String
+}
+
+model Complaint {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  description   String
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model ChatLog {
+  id        Int      @id @default(autoincrement())
+  patientId Int
+  patient   Patient  @relation(fields: [patientId], references: [patient_id])
+  message   String
+  response  String
+  createdAt DateTime @default(now())
+}
+
+model DoctorService {
+  id              Int    @id @default(autoincrement())
+  doctorId        Int
+  doctor          Doctor @relation(fields: [doctorId], references: [doctor_id])
+  serviceName     String
+  description     String
+  consultationFee Float
+}
+
+model FamilyMember {
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  user     User   @relation(fields: [userId], references: [id])
+  name     String
+  relation String
+  age      Int
+}
+
+model CoPatientCollab {
+  id               Int         @id @default(autoincrement())
+  appointmentId    Int
+  appointment      Appointment @relation(fields: [appointmentId], references: [id])
+  sharedWithUserId Int
+}
+
+model SupportTicket {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+  issue  String
+  status String @default("open")
 }
