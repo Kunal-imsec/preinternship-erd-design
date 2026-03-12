@@ -1,0 +1,88 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="ERD">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- USERS -->
+        <mxCell id="users" value="USERS&#xa;PK user_id&#xa;phone&#xa;password&#xa;role&#xa;created_at" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="50" y="50" width="180" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- DOCTORS -->
+        <mxCell id="doctors" value="DOCTORS&#xa;PK doctor_id&#xa;FK user_id&#xa;name&#xa;specialization&#xa;experience&#xa;rating" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="300" y="50" width="200" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- PATIENTS -->
+        <mxCell id="patients" value="PATIENTS&#xa;PK patient_id&#xa;FK user_id&#xa;name&#xa;age&#xa;sex&#xa;weight" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="50" y="250" width="200" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- APPOINTMENTS -->
+        <mxCell id="appointments" value="APPOINTMENTS&#xa;PK appointment_id&#xa;FK user_id&#xa;FK doctor_id&#xa;FK patient_id&#xa;slot_id&#xa;date&#xa;status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;" vertex="1" parent="1">
+          <mxGeometry x="300" y="250" width="220" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- TIME SLOTS -->
+        <mxCell id="slots" value="TIME_SLOTS&#xa;PK slot_id&#xa;availability_id&#xa;slot_time&#xa;is_booked" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;" vertex="1" parent="1">
+          <mxGeometry x="600" y="250" width="200" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- AVAILABILITY -->
+        <mxCell id="availability" value="AVAILABILITY&#xa;PK availability_id&#xa;doctor_id&#xa;day&#xa;start_time&#xa;end_time" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="1">
+          <mxGeometry x="600" y="50" width="200" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- PAYMENTS -->
+        <mxCell id="payments" value="PAYMENTS&#xa;PK payment_id&#xa;appointment_id&#xa;amount&#xa;status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;" vertex="1" parent="1">
+          <mxGeometry x="550" y="450" width="200" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- FEEDBACK -->
+        <mxCell id="feedback" value="FEEDBACK&#xa;PK feedback_id&#xa;appointment_id&#xa;rating&#xa;review" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="300" y="450" width="200" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- RELATIONSHIPS -->
+        <mxCell id="r1" style="endArrow=block;" edge="1" parent="1" source="users" target="doctors">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r2" style="endArrow=block;" edge="1" parent="1" source="users" target="patients">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r3" style="endArrow=block;" edge="1" parent="1" source="users" target="appointments">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r4" style="endArrow=block;" edge="1" parent="1" source="doctors" target="appointments">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r5" style="endArrow=block;" edge="1" parent="1" source="patients" target="appointments">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r6" style="endArrow=block;" edge="1" parent="1" source="availability" target="slots">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r7" style="endArrow=block;" edge="1" parent="1" source="slots" target="appointments">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r8" style="endArrow=block;" edge="1" parent="1" source="appointments" target="payments">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r9" style="endArrow=block;" edge="1" parent="1" source="appointments" target="feedback">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
